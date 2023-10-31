@@ -3,9 +3,16 @@ from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 
+from models import TodoModel
+
 
 app = Flask(__name__)
 api = Api(app)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+db = SQLAlchemy(app)
+db.create_all()
 
 
 TODOS = {
@@ -40,7 +47,7 @@ class Todo(Resource):
 
 class TodoList(Resource):
     def get(self):
-        return TODOS
+        return TodoModel.query.all()
 
     def post(self):
         args = parser.parse_args()
