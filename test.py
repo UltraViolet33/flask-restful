@@ -1,6 +1,6 @@
 import requests
 
-from main import Video
+# from main import Video
 
 BASE = "http://127.0.0.1:5000/"
 
@@ -17,5 +17,14 @@ BASE = "http://127.0.0.1:5000/"
 # response = requests.delete(BASE + "video/0")
 # print(response)
 
-response = requests.patch(BASE + "video/2", {"name": "bob"})
-print(response.json())
+# response = requests.patch(BASE + "video/2", {"name": "bob"})
+# print(response.json())
+
+
+def test_get_all_todos():
+    response = requests.get(BASE + "todos")
+    print(response.json())
+
+
+
+test_get_all_todos()
