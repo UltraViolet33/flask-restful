@@ -1,18 +1,13 @@
-from email import message
-from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
-
-#from models import TodoModel
+from flask import Flask
 
 
 app = Flask(__name__)
 api = Api(app)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 db = SQLAlchemy(app)
-
 
 class TodoModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -23,14 +18,8 @@ class TodoModel(db.Model):
 
 # db.create_all()
 
-TODOS = {
-    'todo1': {'task': 'build an API'},
-    'todo2': {'task': '?????'},
-    'todo3': {'task': 'profit!'},
-}
-
 parser = reqparse.RequestParser()
-parser.add_argument('task', type='string', help='task of todo, cannot be empty')
+parser.add_argument('task')
 
 def abort_if_todo_doesnt_exist(todo_id):
     abort(404, message="Todo {} doesn't exist".format(todo_id))
@@ -46,9 +35,9 @@ class Todo(Resource):
         todo = TodoModel.query.get(todo_id)
         if not todo:
             abort_if_todo_doesnt_exist(todo_id)
-        todo.delete()
+        TodoModel.query.filter_by(id=todo_id).delete()
         db.session.commit()
-        return '', 204
+        return "", 204
 
     def put(self, todo_id):
         args = parser.parse_args()
@@ -57,7 +46,7 @@ class Todo(Resource):
             abort_if_todo_doesnt_exist(todo_id)
         todo.task = args['task']
         db.session.commit()
-        return task, 201
+        return todo.to_dict(), 201
 
 
 class TodoList(Resource):
